@@ -50,7 +50,20 @@ const login = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-  return res.send('updateUser')
+  const { email, name, lastName, location } = req.body
+  if (!email || !name || !lastName || !location) {
+    throw new BadRequestError('Please provide all values')
+  }
+  const user = await User.findById({ _id: req.user.userId })
+
+  user.email = email
+  user.name = name
+  user.lastName = lastName
+  user.location = location
+
+  await user.save()
+  const token = user.createJwt()
+  return res.status(StatusCodes.OK).json({ user, token, location })
 }
 
 export { register, login, updateUser }
