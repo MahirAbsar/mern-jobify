@@ -16,6 +16,7 @@ import jobsRouter from './routes/jobsRoutes.js'
 import authenticate from './middleware/authenticate.js'
 import notFoundMiddleware from './middleware/not-found.js'
 import errorHandlerMiddleware from './middleware/error-handler.js'
+import Job from './models/Job.js'
 
 app.use(express.json())
 if (process.env.NODE_DEV !== 'production') {
