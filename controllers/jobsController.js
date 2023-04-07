@@ -30,12 +30,48 @@ const deleteJob = async (req, res) => {
   const deletedJob = await Job.findOneAndDelete({ _id: jobId })
   return res.status(StatusCodes.OK).json({ msg: 'Success! Job removed' })
 }
+
 const getAllJobs = async (req, res) => {
-  const jobs = await Job.find({ createdBy: req.user.userId })
+  const { status, jobType, sort, search } = req.query
+
+  const queryObject = {
+    createdBy: req.user.userId,
+  }
+
+  if (status && status !== 'all') {
+    queryObject.status = status
+  }
+
+  if (jobType && jobType !== 'all') {
+    queryObject.jobType = jobType
+  }
+
+  if (search) {
+    queryObject.position = { $regex: search, $options: 'i' }
+  }
+
+  let result = Job.find(queryObject)
+
+  if (sort && sort === 'latest') {
+    result = result.sort('-createdAt')
+  }
+  if (sort && sort === 'oldest') {
+    result = result.sort('createdAt')
+  }
+  if (sort && sort === 'a-z') {
+    result = result.sort('position')
+  }
+  if (sort && sort === 'z-a') {
+    result = result.sort('-position')
+  }
+
+  const jobs = await result
+
   return res
     .status(StatusCodes.OK)
     .json({ jobs, totalJobs: jobs.length, numOfPages: 1 })
 }
+
 const updateJob = async (req, res) => {
   const { id: jobId } = req.params
   const { company, position } = req.body
@@ -94,7 +130,7 @@ const showStats = async (req, res) => {
     { $sort: { '_id.year': -1, '_id.month': -1 } },
     { $limit: 6 },
   ])
-  console.log('Monthly Applications----', monthlyApplications)
+
   monthlyApplications = monthlyApplications
     .map((item) => {
       const {

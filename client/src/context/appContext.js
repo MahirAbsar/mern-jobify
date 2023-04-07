@@ -27,6 +27,7 @@ import {
   EDIT_JOB_ERROR,
   SHOW_STATS_BEGIN,
   SHOW_STATS_SUCCESS,
+  CLEAR_FILTERS,
 } from './actions'
 
 const user = localStorage.getItem('user')
@@ -54,6 +55,11 @@ export const initialState = {
   jobs: [],
   stats: {},
   monthlyApplications: [],
+  search: '',
+  searchStatus: 'all',
+  searchType: 'all',
+  sort: 'latest',
+  sortOptions: ['latest', 'oldest', 'a-z', 'z-a'],
   totalJobs: 0,
   numOfPage: 1,
   page: 1,
@@ -194,7 +200,11 @@ const AppProvider = ({ children }) => {
   }
 
   const getJobs = async () => {
-    let url = '/jobs'
+    const { search, searchStatus, searchType, sort } = state
+    let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}`
+    if (search) {
+      url += `&search=${search}`
+    }
     dispatch({ type: GET_JOBS_BEGIN })
     try {
       const { data } = await axiosInstance(url)
@@ -270,6 +280,10 @@ const AppProvider = ({ children }) => {
     removeUserFromLocalStorage()
   }
 
+  const clearFilters = () => {
+    dispatch({ type: CLEAR_FILTERS })
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -287,6 +301,7 @@ const AppProvider = ({ children }) => {
         deleteJob,
         editJob,
         showStats,
+        clearFilters,
       }}
     >
       {children}
