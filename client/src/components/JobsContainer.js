@@ -21,6 +21,7 @@ const JobsContainer = () => {
 
   useEffect(() => {
     getJobs()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, searchStatus, searchType, sort, page])
 
   if (isLoading) {

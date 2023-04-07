@@ -2,6 +2,11 @@ import dotenv from 'dotenv'
 import morgan from 'morgan'
 import 'express-async-errors'
 import express from 'express'
+
+import { dirname } from 'path'
+import { fileURLToPath } from 'url'
+import path from 'path'
+
 const app = express()
 dotenv.config()
 
@@ -16,18 +21,23 @@ import jobsRouter from './routes/jobsRoutes.js'
 import authenticate from './middleware/authenticate.js'
 import notFoundMiddleware from './middleware/not-found.js'
 import errorHandlerMiddleware from './middleware/error-handler.js'
-import Job from './models/Job.js'
 
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+app.use(express.static(path.resolve(__dirname, './client/build')))
 app.use(express.json())
-if (process.env.NODE_DEV !== 'production') {
-  app.use(morgan('dev'))
-}
+
 app.get('/', (req, res) => {
   return res.send('Welcome')
 })
 
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/jobs', authenticate, jobsRouter)
+
+app.get('*', (req, res) => {
+  return res.sendFile(path.resolve(__dirname, './client/build', 'index.html'))
+})
+
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
 const port = process.env.PORT || 5000
