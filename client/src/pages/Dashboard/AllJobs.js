@@ -1,4 +1,12 @@
+import { SearchContainer, JobsContainer } from '../../components'
+import Wrapper from '../../assets/wrappers/JobsContainer'
+
 const AllJobs = () => {
-  return <div>AllJobs</div>
+  return (
+    <Wrapper>
+      <SearchContainer />
+      <JobsContainer />
+    </Wrapper>
+  )
 }
 export default AllJobs
