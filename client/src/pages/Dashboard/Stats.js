@@ -19,6 +19,5 @@ const Stats = () => {
       {monthlyApplications.length > 0 && <ChartsContainer />}
     </>
   )
-  return <div>Stats</div>
 }
 export default Stats
