@@ -13,10 +13,8 @@ const start = async () => {
       await readFile(new URL('./mock-data.json', import.meta.url))
     )
     await Job.create(jsonData)
-    console.log('Success')
     process.exit(0)
   } catch (error) {
-    console.log(error)
     process.exit(1)
   }
 }
