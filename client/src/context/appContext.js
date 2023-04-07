@@ -28,6 +28,7 @@ import {
   SHOW_STATS_BEGIN,
   SHOW_STATS_SUCCESS,
   CLEAR_FILTERS,
+  CHANGE_PAGE,
 } from './actions'
 
 const user = localStorage.getItem('user')
@@ -200,8 +201,8 @@ const AppProvider = ({ children }) => {
   }
 
   const getJobs = async () => {
-    const { search, searchStatus, searchType, sort } = state
-    let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}`
+    const { search, searchStatus, searchType, sort, page } = state
+    let url = `/jobs?status=${searchStatus}&jobType=${searchType}&sort=${sort}&page=${page}`
     if (search) {
       url += `&search=${search}`
     }
@@ -280,6 +281,10 @@ const AppProvider = ({ children }) => {
     removeUserFromLocalStorage()
   }
 
+  const changePage = (page) => {
+    dispatch({ type: CHANGE_PAGE, payload: { page } })
+  }
+
   const clearFilters = () => {
     dispatch({ type: CLEAR_FILTERS })
   }
@@ -302,6 +307,7 @@ const AppProvider = ({ children }) => {
         editJob,
         showStats,
         clearFilters,
+        changePage,
       }}
     >
       {children}

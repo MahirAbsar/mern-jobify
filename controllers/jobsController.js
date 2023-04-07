@@ -65,11 +65,19 @@ const getAllJobs = async (req, res) => {
     result = result.sort('-position')
   }
 
+  const page = Number(req.query.page) || 1
+  const limit = Number(req.query.limit) || 10
+  const skip = (page - 1) * limit
+  result = result.skip(skip).limit(limit)
+
   const jobs = await result
+
+  const totalJobs = await Job.countDocuments(queryObject)
+  const numOfPages = Math.ceil(totalJobs / limit)
 
   return res
     .status(StatusCodes.OK)
-    .json({ jobs, totalJobs: jobs.length, numOfPages: 1 })
+    .json({ jobs, totalJobs: totalJobs, numOfPages: numOfPages })
 }
 
 const updateJob = async (req, res) => {
@@ -137,7 +145,6 @@ const showStats = async (req, res) => {
         _id: { year, month },
         count,
       } = item
-      // accepts 0-11
       const date = moment()
         .month(month - 1)
         .year(year)
