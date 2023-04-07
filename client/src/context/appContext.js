@@ -25,6 +25,8 @@ import {
   EDIT_JOB_BEGIN,
   EDIT_JOB_SUCCESS,
   EDIT_JOB_ERROR,
+  SHOW_STATS_BEGIN,
+  SHOW_STATS_SUCCESS,
 } from './actions'
 
 const user = localStorage.getItem('user')
@@ -50,6 +52,8 @@ export const initialState = {
   statusOptions: ['pending', 'interview', 'declined'],
   status: 'pending',
   jobs: [],
+  stats: {},
+  monthlyApplications: [],
   totalJobs: 0,
   numOfPage: 1,
   page: 1,
@@ -244,6 +248,23 @@ const AppProvider = ({ children }) => {
     }
   }
 
+  const showStats = async () => {
+    dispatch({ type: SHOW_STATS_BEGIN })
+    try {
+      const { data } = await axiosInstance('/jobs/stats')
+      dispatch({
+        type: SHOW_STATS_SUCCESS,
+        payload: {
+          stats: data.defaultStats,
+          monthlyApplications: data.monthlyApplications,
+        },
+      })
+    } catch (error) {
+      console.log(error.response)
+    }
+    clearAlert()
+  }
+
   const logoutUser = () => {
     dispatch({ type: LOGOUT_USER })
     removeUserFromLocalStorage()
@@ -265,6 +286,7 @@ const AppProvider = ({ children }) => {
         setEditJob,
         deleteJob,
         editJob,
+        showStats,
       }}
     >
       {children}
